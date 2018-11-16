@@ -99,22 +99,25 @@ if [[ ! -d gtc ]]; then
     echo "${YLW}####################################"
 clear
     sudo rm -rf linaro
+    sudo rm -rf gcc/.git
     echo "${YLW}####################################"
     echo "${GRN}#       CLONING TOOLCHAIN          #"
     echo "${YLW}####################################"
-    git clone -q https://github.com/Skyrimus/arm-linux-gnueabihf-linaro-6.3.1-mt6580 gtc
-    export ARCH=arm CROSS_COMPILE=$PWD/gtc/bin/arm-linux-gnueabihf-
+    git clone -q https://github.com/svoboda18/android_gcc_6.4.1_arm-eabi gcc
+    export ARCH=arm CROSS_COMPILE=${PWD}/gcc/bin/arm-eabi-
+    export SUBARCH=arm
 else
-    export ARCH=arm CROSS_COMPILE=$PWD/gtc/bin/arm-linux-gnueabihf-
+    export ARCH=arm CROSS_COMPILE=${PWD}/gcc/bin/arm-eabi-
+    export SUBARCH=arm
 fi
 }
 
 function BUILD() {
         mkdir -p out
         echo "${PURP} READING DEFCONFIG..."
-        make X5_bsp_defconfig O=out/ | tee -a defconfig.log
+        make O=out/ TARGET_ARCH=arm X5_bsp_defconfig | tee -a defconfig.log
         echo "${YLW} BUILDING KERNEL..." 
-        make -j4 O=out/ | tee -a Kernel.log
+        make -j4 O=out/ TARGET_ARCH=arm | tee -a Kernel.log
         OIMAGE=out/arch/arm/boot/zImage-dtb
 }
 
